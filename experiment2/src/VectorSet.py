@@ -34,7 +34,7 @@ class VectorSet:
             return self.set[label]
         raise(IndexError(f"Label {label} not in VectorSet"))
     
-    def populate(self, vectors: np.ndarray, labels:list) -> None:
+    def populate(self, vectors: np.ndarray, labels:list, singular_values:list=None) -> None:
         """
         Populates VectorSpaces with vectors.
         If label does not exists in label list, generate it
@@ -47,13 +47,21 @@ class VectorSet:
             raise(AssertionError("Vector dimension must be the same as VectorSpace dimension"))       
         if len(vectors) != len(labels):
             raise(AssertionError("Each column vector must have a corresponding label in list"))
+        if singular_values is not None:
+            if type(singular_values) is not list:
+                singular_values = [singular_values]
+            if len(singular_values) != vectors.shape[0]:
+                raise(AssertionError("List of singular values must have the same batch lenght as vector"))
+        else:
+            singular_values = [1]*vectors.shape[0]
 
         # Order labels and vector
         tensor_list = vectors.tolist()
-        lt = zip(labels, tensor_list)
+        lt = zip(labels, tensor_list, singular_values)
         lt = sorted(lt)
-        sorted_tensor = np.array([i for _, i in lt])
-        sorted_labels = [i for i, _ in lt]
+        sorted_tensor = np.array([i for _, i, _ in lt])
+        sorted_labels = [i for i, _, _ in lt]
+        sorted_singular_values = [i for _, _, i in lt]
 
         # Group labels
         group_list = [list(g) for _, g in groupby(sorted_labels)]
@@ -66,7 +74,7 @@ class VectorSet:
                 self.labels.append(label)
                 self.set[label] = VectorSpace(dim=self.dim, label=label)
 
-            self.set[label].append(sorted_tensor[i:i+len(group)])
+            self.set[label].append(sorted_tensor[i:i+len(group)], sorted_singular_values[i:i+len(group)])
             i += len(group)
 
     
@@ -74,7 +82,7 @@ class VectorSet:
         subset = VectorSet(labels=self.labels, dim=self.dim)
         for label, vspace in self.set.items():
             vsubspace = vspace.pca(min_energy)
-            subset.populate(vsubspace.A, [label]*len(vsubspace))
+            subset.populate(vsubspace.A, [label]*len(vsubspace), singular_values = vsubspace.singular_values)
         return subset
 
     def __str__(self) -> str:
