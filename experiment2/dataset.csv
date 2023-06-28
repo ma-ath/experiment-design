@@ -1,5 +1,31 @@
-Only Sheet, Only Hands
-Alexander Gedike, 30 легких этюдов - Op.47
-Debussy, aaa
-F. Chopin, Etudes - Op.10 
-Bach
+composer, song, method, n_compasses
+chopin, etude n 1, only_hands, 2
+chopin, etude n 2, only_sheet, 3
+chopin, etude n 1, only_hands, 4
+chopin, etude n 2, only_sheet, 2
+chopin, etude n 1, only_hands, 1
+chopin, etude n 2, only_sheet, 3
+chopin, etude n 1, only_hands, 2
+chopin, etude n 2, only_sheet, 4
+chopin, etude n 1, only_hands, 3
+chopin, etude n 2, only_sheet, 2
+debussy, etude n 1, only_hands, 4
+debussy, etude n 2, only_sheet, 5
+debussy, etude n 1, only_hands, 4
+debussy, etude n 2, only_sheet, 6
+debussy, etude n 1, only_hands, 5
+debussy, etude n 2, only_sheet, 6
+debussy, etude n 1, only_hands, 4
+debussy, etude n 2, only_sheet, 6
+debussy, etude n 1, only_hands, 6
+debussy, etude n 2, only_sheet, 5
+gedike, etude n 1, only_hands, 13
+gedike, etude n 2, only_sheet, 24
+gedike, etude n 1, only_hands, 23
+gedike, etude n 2, only_sheet, 12
+gedike, etude n 1, only_hands, 14
+gedike, etude n 2, only_sheet, 23
+gedike, etude n 1, only_hands, 14
+gedike, etude n 2, only_sheet, 14
+gedike, etude n 1, only_hands, 22
+gedike, etude n 2, only_sheet, 23
