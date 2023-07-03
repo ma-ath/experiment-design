@@ -37,7 +37,7 @@ summary(aggdata)
 
 ```{r paired_test}
 t.test(accuracy ~ method, data = aggdata, alternative = "two.sided",
-       paired = TRUE)
+       paired = TRUE, )
 ```
 
 We get a difference of ~0.043 > minimum_interesting_effect
@@ -53,7 +53,14 @@ shapiro.test(accuracy_diff)
 qqplot(x = rnorm(100, 0, 1), y = accuracy_diff,
        xlab = "Normal Distribution",
        ylab = "Accuracy",
-       main = "Q-Q Plot")
+       main = "Q-Q Plot",
+       )
+
+plot(x = data$method == "cosine_similarity",
+     y = data$accuracy - mean(data$accuracy),
+     xlab = "Method",
+     ylab = "Accuracy - mean")
+
 ```
 
 
