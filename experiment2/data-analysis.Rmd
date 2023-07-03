@@ -1,0 +1,68 @@
+# Load all necessary libraries
+```{r setup_rmd}
+pacman::p_load(pacman, ggplot2, rio, devtools, MESS)
+base_dir <- dirname(rstudioapi::getActiveDocumentContext()$path)
+setwd(base_dir)
+```
+
+# Calculate sample size
+To calculate the sample size, we need an estimate of the standard deviation.
+We perform a pilot study and discover std=0.015 and sd.ratio=1.33 as a good
+estimate
+
+```{r sample_size}
+alpha <- 0.05
+experiment_power  <- 0.8
+minimum_interesting_effect <- 0.02
+std <- 0.015
+sd_ratio <- 1.33
+power_t_test(n=NULL, sd=std, delta=minimum_interesting_effect,
+                   ratio=1, sd.ratio=sd_ratio,
+                   power=experiment_power, sig.level = alpha,
+                   type="paired", alternative="two.sided")
+
+```
+We need at least N=7. We select N=10
+
+# Load dataset of results for analysis
+```{r load dataset}
+data <- import("dataset.csv")
+data$min_energy <- as.factor(data$min_energy)
+aggdata <- aggregate(accuracy ~ min_energy:method,
+                     data = data, FUN = mean)
+summary(aggdata)
+```
+
+# Perform paired t-test
+
+```{r paired_test}
+t.test(accuracy ~ method, data = aggdata, alternative = "two.sided",
+       paired = TRUE)
+```
+
+We get a difference of ~0.043 > minimum_interesting_effect
+This means we have data to support that 
+
+
+# Check data assumptions
+```{r check_assumptions}
+accuracy_diff <- data[data$method == "cosine_similarity", 3] -
+  data[data$method == "scaled_cosine_similarity", 3]
+
+shapiro.test(accuracy_diff)
+qqplot(x = rnorm(100, 0, 1), y = accuracy_diff,
+       xlab = "Normal Distribution",
+       ylab = "Accuracy",
+       main = "Q-Q Plot")
+```
+
+
+```{r plots}
+# Create the paired plot
+ggplot(data, aes(x = min_energy, y = accuracy, color = method, shape = method))+
+  geom_point() +
+  geom_line() +
+  labs(x = "Min Energy", y = "Accuracy", color = "Method", shape = "Method") +
+  theme_minimal()
+```
+
