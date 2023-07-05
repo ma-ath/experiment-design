@@ -1,6 +1,6 @@
 # Load all necessary libraries
 ```{r setup_rmd}
-pacman::p_load(pacman, ggplot2, rio, devtools, MESS)
+pacman::p_load(pacman, ggplot2, rio, devtools, MESS, car)
 base_dir <- dirname(rstudioapi::getActiveDocumentContext()$path)
 setwd(base_dir)
 ```
@@ -19,10 +19,15 @@ sd_ratio <- 1.33
 power_t_test(n=NULL, sd=std, delta=minimum_interesting_effect,
                    ratio=1, sd.ratio=sd_ratio,
                    power=experiment_power, sig.level = alpha,
-                   type="paired", alternative="two.sided")
+                   type="paired", alternative="one.sided")
+
+power_t_test(n=10, sd=std, delta=minimum_interesting_effect,
+             ratio=1, sd.ratio=sd_ratio,
+             power=NULL, sig.level = alpha,
+             type="paired", alternative="one.sided")
 
 ```
-We need at least N=7. We select N=10
+We need at least N=6. We select N=10
 
 # Load dataset of results for analysis
 ```{r load dataset}
@@ -36,12 +41,11 @@ summary(aggdata)
 # Perform paired t-test
 
 ```{r paired_test}
-t.test(accuracy ~ method, data = aggdata, alternative = "two.sided",
-       paired = TRUE, )
+t.test(accuracy ~ method, data = aggdata, alternative = "greater",
+       paired = TRUE)
 ```
 
 We get a difference of ~0.043 > minimum_interesting_effect
-This means we have data to support that 
 
 
 # Check data assumptions
@@ -49,20 +53,8 @@ This means we have data to support that
 accuracy_diff <- data[data$method == "cosine_similarity", 3] -
   data[data$method == "scaled_cosine_similarity", 3]
 
-shapiro.test(accuracy_diff)
-qqplot(x = rnorm(100, 0, 1), y = accuracy_diff,
-       xlab = "Normal Distribution",
-       ylab = "Accuracy",
-       main = "Q-Q Plot",
-       )
-
-plot(x = data$method == "cosine_similarity",
-     y = data$accuracy - mean(data$accuracy),
-     xlab = "Method",
-     ylab = "Accuracy - mean")
-
+qqPlot(accuracy_diff)
 ```
-
 
 ```{r plots}
 # Create the paired plot
@@ -72,4 +64,3 @@ ggplot(data, aes(x = min_energy, y = accuracy, color = method, shape = method))+
   labs(x = "Min Energy", y = "Accuracy", color = "Method", shape = "Method") +
   theme_minimal()
 ```
-
